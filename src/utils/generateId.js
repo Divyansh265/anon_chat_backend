@@ -1,9 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
-
-function generateSessionId() {
-  return uuidv4();
-}
-
 function generateAnonName() {
   const adjectives = ['Silent', 'Hidden', 'Quiet', 'Shadow', 'Mystic', 'Wandering', 'Unknown'];
   const nouns = ['Fox', 'Wolf', 'Owl', 'Bear', 'Hawk', 'Lynx', 'Raven'];
@@ -13,4 +7,4 @@ function generateAnonName() {
   return `${adj}${noun}${num}`;
 }
 
-module.exports = { generateSessionId, generateAnonName };
+module.exports = { generateAnonName };

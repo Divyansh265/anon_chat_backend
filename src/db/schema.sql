@@ -1,12 +1,10 @@
--- Anonymous Chat System Schema
-
 CREATE TABLE IF NOT EXISTS chat_sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_a_id VARCHAR(36) NOT NULL,
   user_b_id VARCHAR(36) NOT NULL,
   started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   ended_at TIMESTAMPTZ,
-  end_reason VARCHAR(50) -- 'skip', 'disconnect', 'ended'
+  end_reason VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS chat_messages (

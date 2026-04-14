@@ -1,5 +1,13 @@
 require('dotenv').config();
 
+const rawOrigins = process.env.CORS_ORIGIN || '*';
+
+const corsOrigin = rawOrigins === '*'
+  ? '*'
+  : rawOrigins.includes(',')
+    ? rawOrigins.split(',').map((o) => o.trim())
+    : rawOrigins;
+
 module.exports = {
   port: process.env.PORT || 4000,
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -15,5 +23,5 @@ module.exports = {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '1000'),
   },
   maxMessageLength: parseInt(process.env.MAX_MESSAGE_LENGTH || '500'),
-  corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  corsOrigin,
 };

@@ -7,7 +7,12 @@ const healthRouter = require('./routes/health');
 
 const app = express();
 
-app.use(cors({ origin: config.corsOrigin, credentials: true }));
+const corsOptions =
+  config.corsOrigin === '*'
+    ? { origin: '*' }
+    : { origin: config.corsOrigin, credentials: true };
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(requestLogger);
 

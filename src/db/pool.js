@@ -10,7 +10,10 @@ const pool = new Pool({
   database: config.db.name,
   max: 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 5000,
+  ssl: config.nodeEnv === 'production' || config.db.host.includes('render.com')
+    ? { rejectUnauthorized: false }
+    : false,
 });
 
 pool.on('error', (err) => {

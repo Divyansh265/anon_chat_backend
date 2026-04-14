@@ -7,12 +7,13 @@ const registerChatHandlers = require('./sockets/chatHandler');
 
 const server = http.createServer(app);
 
+const ioOptions =
+  config.corsOrigin === '*'
+    ? { cors: { origin: '*', methods: ['GET', 'POST'] } }
+    : { cors: { origin: config.corsOrigin, methods: ['GET', 'POST'], credentials: true } };
+
 const io = new Server(server, {
-  cors: {
-    origin: config.corsOrigin,
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
+  ...ioOptions,
   pingTimeout: 20000,
   pingInterval: 10000,
 });

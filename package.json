@@ -1,0 +1,26 @@
+{
+  "name": "anon-chat-backend",
+  "version": "1.0.0",
+  "description": "Anonymous random text chat backend",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest",
+    "test:db": "jest --config=jest.db.config.js --testTimeout=10000 --forceExit"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pg": "^8.11.5",
+    "socket.io": "^4.7.5",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "nodemon": "^3.1.0",
+    "socket.io-client": "^4.8.3",
+    "supertest": "^7.2.2"
+  }
+}

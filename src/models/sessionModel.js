@@ -1,25 +1,23 @@
-const db = require('../db/pool');
+import { query } from '../db/pool.js';
 
-async function createSession(userAId, userBId) {
-  const res = await db.query(
+export async function createSession(userAId, userBId) {
+  const res = await query(
     `INSERT INTO chat_sessions (user_a_id, user_b_id) VALUES ($1, $2) RETURNING id`,
     [userAId, userBId]
   );
   return res.rows[0].id;
 }
 
-async function endSession(sessionId, reason) {
-  await db.query(
+export async function endSession(sessionId, reason) {
+  await query(
     `UPDATE chat_sessions SET ended_at = NOW(), end_reason = $1 WHERE id = $2`,
     [reason, sessionId]
   );
 }
 
-async function saveMessage(sessionId, senderId, content) {
-  await db.query(
+export async function saveMessage(sessionId, senderId, content) {
+  await query(
     `INSERT INTO chat_messages (session_id, sender_id, content) VALUES ($1, $2, $3)`,
     [sessionId, senderId, content]
   );
 }
-
-module.exports = { createSession, endSession, saveMessage };

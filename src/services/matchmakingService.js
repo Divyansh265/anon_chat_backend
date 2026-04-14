@@ -1,17 +1,17 @@
-const logger = require('../utils/logger');
+import logger from '../utils/logger.js';
 
 const waitingQueue = [];
 const activePairs = new Map();
 const sessionMap = new Map();
 
-function enqueue(socketId) {
+export function enqueue(socketId) {
   if (!waitingQueue.includes(socketId)) {
     waitingQueue.push(socketId);
     logger.info('User added to queue', { socketId, queueLength: waitingQueue.length });
   }
 }
 
-function dequeue(socketId) {
+export function dequeue(socketId) {
   const idx = waitingQueue.indexOf(socketId);
   if (idx !== -1) {
     waitingQueue.splice(idx, 1);
@@ -19,7 +19,7 @@ function dequeue(socketId) {
   }
 }
 
-function tryMatch(socketId) {
+export function tryMatch(socketId) {
   const partnerIdx = waitingQueue.findIndex((id) => id !== socketId);
   if (partnerIdx === -1) return null;
 
@@ -34,46 +34,33 @@ function tryMatch(socketId) {
   return partnerId;
 }
 
-function getPartner(socketId) {
+export function getPartner(socketId) {
   return activePairs.get(socketId) || null;
 }
 
-function removePair(socketId) {
+export function removePair(socketId) {
   const partnerId = activePairs.get(socketId);
   if (partnerId) activePairs.delete(partnerId);
   activePairs.delete(socketId);
   return partnerId;
 }
 
-function setSession(socketId, sessionId) {
+export function setSession(socketId, sessionId) {
   sessionMap.set(socketId, sessionId);
 }
 
-function getSession(socketId) {
+export function getSession(socketId) {
   return sessionMap.get(socketId) || null;
 }
 
-function clearSession(socketId) {
+export function clearSession(socketId) {
   sessionMap.delete(socketId);
 }
 
-function isInQueue(socketId) {
+export function isInQueue(socketId) {
   return waitingQueue.includes(socketId);
 }
 
-function isInChat(socketId) {
+export function isInChat(socketId) {
   return activePairs.has(socketId);
 }
-
-module.exports = {
-  enqueue,
-  dequeue,
-  tryMatch,
-  getPartner,
-  removePair,
-  setSession,
-  getSession,
-  clearSession,
-  isInQueue,
-  isInChat,
-};

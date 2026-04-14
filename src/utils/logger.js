@@ -3,7 +3,6 @@ const currentLevel = process.env.LOG_LEVEL || 'info';
 
 function log(level, message, meta = {}) {
   if (levels[level] > levels[currentLevel]) return;
-
   const timestamp = new Date().toISOString();
   const metaStr = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
   console[level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log'](
@@ -11,7 +10,7 @@ function log(level, message, meta = {}) {
   );
 }
 
-module.exports = {
+export default {
   info: (msg, meta) => log('info', msg, meta),
   warn: (msg, meta) => log('warn', msg, meta),
   error: (msg, meta) => log('error', msg, meta),

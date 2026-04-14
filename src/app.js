@@ -1,9 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-const config = require('./config');
-const requestLogger = require('./middlewares/requestLogger');
-const errorHandler = require('./middlewares/errorHandler');
-const healthRouter = require('./routes/health');
+import express from 'express';
+import cors from 'cors';
+import config from './config/index.js';
+import requestLogger from './middlewares/requestLogger.js';
+import errorHandler from './middlewares/errorHandler.js';
+import healthRouter from './routes/health.js';
 
 const app = express();
 
@@ -24,4 +24,4 @@ app.use((req, res) => {
 
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

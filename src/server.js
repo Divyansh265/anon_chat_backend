@@ -1,11 +1,11 @@
-const http = require('http');
-const { Server } = require('socket.io');
-const app = require('./app');
-const config = require('./config');
-const logger = require('./utils/logger');
-const registerChatHandlers = require('./sockets/chatHandler');
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import app from './app.js';
+import config from './config/index.js';
+import logger from './utils/logger.js';
+import registerChatHandlers from './sockets/chatHandler.js';
 
-const server = http.createServer(app);
+const server = createServer(app);
 
 const ioOptions =
   config.corsOrigin === '*'

@@ -1,11 +1,11 @@
-const matchmaking = require('../services/matchmakingService');
-const rateLimiter = require('../services/rateLimiterService');
-const sessionModel = require('../models/sessionModel');
-const { generateAnonName } = require('../utils/generateId');
-const config = require('../config');
-const logger = require('../utils/logger');
+import * as matchmaking from '../services/matchmakingService.js';
+import { isRateLimited, clearRateLimit } from '../services/rateLimiterService.js';
+import { createSession, endSession, saveMessage } from '../models/sessionModel.js';
+import { generateAnonName } from '../utils/generateId.js';
+import config from '../config/index.js';
+import logger from '../utils/logger.js';
 
-module.exports = function registerChatHandlers(io, socket) {
+export default function registerChatHandlers(io, socket) {
   const userId = socket.id;
   logger.info('Socket connected', { userId });
 
@@ -35,7 +35,7 @@ module.exports = function registerChatHandlers(io, socket) {
       return;
     }
 
-    if (rateLimiter.isRateLimited(userId)) {
+    if (isRateLimited(userId)) {
       socket.emit('error_event', { message: 'Slow down! Too many messages.' });
       return;
     }
@@ -57,7 +57,7 @@ module.exports = function registerChatHandlers(io, socket) {
     socket.emit('receive_message', { ...message, isSelf: true });
 
     if (sessionId) {
-      sessionModel.saveMessage(sessionId, userId, content.trim()).catch((err) => {
+      saveMessage(sessionId, userId, content.trim()).catch((err) => {
         logger.error('Failed to save message', { error: err.message });
       });
     }
@@ -70,26 +70,23 @@ module.exports = function registerChatHandlers(io, socket) {
   socket.on('disconnect', async () => {
     logger.info('Socket disconnected', { userId });
     await handleSkipOrEnd(io, socket, 'disconnect');
-    rateLimiter.clearRateLimit(userId);
+    clearRateLimit(userId);
   });
-};
+}
 
 async function handleMatch(io, userAId, userBId) {
   let sessionId = null;
 
   try {
-    sessionId = await sessionModel.createSession(userAId, userBId);
+    sessionId = await createSession(userAId, userBId);
     matchmaking.setSession(userAId, sessionId);
     matchmaking.setSession(userBId, sessionId);
   } catch (err) {
     logger.error('Failed to create DB session', { error: err.message });
   }
 
-  const anonNameA = generateAnonName();
-  const anonNameB = generateAnonName();
-
-  io.to(userAId).emit('matched', { partnerId: userBId, anonName: anonNameB });
-  io.to(userBId).emit('matched', { partnerId: userAId, anonName: anonNameA });
+  io.to(userAId).emit('matched', { partnerId: userBId, anonName: generateAnonName() });
+  io.to(userBId).emit('matched', { partnerId: userAId, anonName: generateAnonName() });
 
   logger.info('Match established', { userAId, userBId, sessionId });
 }
@@ -109,7 +106,7 @@ async function handleSkipOrEnd(io, socket, reason) {
   if (partnerId) matchmaking.clearSession(partnerId);
 
   if (sessionId) {
-    sessionModel.endSession(sessionId, reason).catch((err) => {
+    endSession(sessionId, reason).catch((err) => {
       logger.error('Failed to end DB session', { error: err.message });
     });
   }
@@ -123,10 +120,7 @@ async function handleSkipOrEnd(io, socket, reason) {
   if (reason === 'skip') {
     socket.emit('searching');
     matchmaking.enqueue(userId);
-
     const newPartnerId = matchmaking.tryMatch(userId);
-    if (newPartnerId) {
-      await handleMatch(io, userId, newPartnerId);
-    }
+    if (newPartnerId) await handleMatch(io, userId, newPartnerId);
   }
 }

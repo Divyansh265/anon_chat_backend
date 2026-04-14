@@ -1,6 +1,8 @@
-const { Pool } = require('pg');
-const config = require('../config');
-const logger = require('../utils/logger');
+import pg from 'pg';
+import config from '../config/index.js';
+import logger from '../utils/logger.js';
+
+const { Pool } = pg;
 
 const pool = new Pool({
   host: config.db.host,
@@ -11,16 +13,17 @@ const pool = new Pool({
   max: 10,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
-  ssl: config.nodeEnv === 'production' || config.db.host.includes('render.com')
-    ? { rejectUnauthorized: false }
-    : false,
+  ssl:
+    config.nodeEnv === 'production' || config.db.host.includes('render.com')
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 pool.on('error', (err) => {
   logger.error('Unexpected DB pool error', { error: err.message });
 });
 
-async function query(text, params) {
+export async function query(text, params) {
   const start = Date.now();
   try {
     const res = await pool.query(text, params);
@@ -32,4 +35,4 @@ async function query(text, params) {
   }
 }
 
-module.exports = { query, pool };
+export { pool };

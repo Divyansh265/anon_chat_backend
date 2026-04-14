@@ -1,14 +1,15 @@
-require('dotenv').config();
+import 'dotenv/config';
 
 const rawOrigins = process.env.CORS_ORIGIN || '*';
 
-const corsOrigin = rawOrigins === '*'
-  ? '*'
-  : rawOrigins.includes(',')
+const corsOrigin =
+  rawOrigins === '*'
+    ? '*'
+    : rawOrigins.includes(',')
     ? rawOrigins.split(',').map((o) => o.trim())
     : rawOrigins;
 
-module.exports = {
+export default {
   port: process.env.PORT || 4000,
   nodeEnv: process.env.NODE_ENV || 'development',
   db: {

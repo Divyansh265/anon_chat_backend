@@ -1,6 +1,6 @@
-const logger = require('../utils/logger');
+import logger from '../utils/logger.js';
 
-function requestLogger(req, res, next) {
+export default function requestLogger(req, res, next) {
   const start = Date.now();
   res.on('finish', () => {
     logger.info(`${req.method} ${req.path}`, {
@@ -10,5 +10,3 @@ function requestLogger(req, res, next) {
   });
   next();
 }
-
-module.exports = requestLogger;

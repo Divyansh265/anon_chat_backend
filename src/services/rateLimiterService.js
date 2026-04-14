@@ -1,8 +1,8 @@
-const config = require('../config');
+import config from '../config/index.js';
 
 const messageTimestamps = new Map();
 
-function isRateLimited(socketId) {
+export function isRateLimited(socketId) {
   const now = Date.now();
   const { maxMessages, windowMs } = config.rateLimit;
 
@@ -20,8 +20,6 @@ function isRateLimited(socketId) {
   return false;
 }
 
-function clearRateLimit(socketId) {
+export function clearRateLimit(socketId) {
   messageTimestamps.delete(socketId);
 }
-
-module.exports = { isRateLimited, clearRateLimit };
